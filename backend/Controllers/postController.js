@@ -72,4 +72,26 @@ const addComment = async (req, res) => {
   }
 };
 
-module.exports = { createPost, fetchPosts, addComment };
+const fetchPostsWithPhotos = async (req, res) => {
+  try {
+    const posts = await Post.find({ "content.pic": { $exists: true, $ne: "" } })
+      .sort({ createdAt: -1 })
+      .populate("owner", "-password");
+
+    const photos = posts
+      .filter((post) => post.content?.pic)
+      .map((post) => ({
+        _id: post._id,
+        url: post.content.pic,
+        caption: post.content.caption,
+        owner: post.owner,
+        createdAt: post.createdAt,
+      }));
+
+    return res.json({ photos });
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
+  }
+};
+
+module.exports = { createPost, fetchPosts, addComment, fetchPostsWithPhotos };

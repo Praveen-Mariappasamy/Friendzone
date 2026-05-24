@@ -1,10 +1,12 @@
 import { navigation } from "../../constants/Constants";
 import UserProfileCard from "./UserProfileCard";
 import { Link } from "react-router-dom";
-import { useState } from "react";
+import { useContext, useState } from "react";
+import { MyContext } from "../../context/MyContext";
 
 const Sidebar = () => {
   const [currentPage, setCurrentPage] = useState("");
+  const { setChatContext } = useContext(MyContext);
   return (
     // Sidebar container with styles for width, background color, and other properties.
     <div className="bg-main-shade hidden w-64 overflow-y-auto md:block overflow-x-hidden  drop-shadow-2xl">
@@ -18,7 +20,12 @@ const Sidebar = () => {
                 {/* Navigation links */}
                 {navigation.map((item) => (
                   <Link
-                    onClick={() => setCurrentPage(item.name)}
+                    onClick={() => {
+                      setCurrentPage(item.name);
+                      if (item.href === "/chatbot") {
+                        setChatContext({ mode: "social" });
+                      }
+                    }}
                     key={item.name}
                     to={item.href}
                     // Dynamic class names based on link properties and hover effects.

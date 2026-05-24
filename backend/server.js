@@ -2,6 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
+const path = require("path");
 const app = express();
 const PORT = 8000;
 
@@ -10,17 +11,19 @@ const authRouter = require("./Routes/auth");
 const { userRouter } = require("./Routes/user");
 const { friendRouter } = require("./Routes/friend");
 const { postRouter } = require("./Routes/post");
+const { chatRouter } = require("./Routes/chat");
+const { uploadRouter } = require("./Routes/upload");
 
 //middelwares
 app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
+app.use(express.json({ limit: "10mb" }));
 app.use(cookieParser());
 app.use(cors({ origin: "http://localhost:5173", credentials: true }));
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 //db
 const mongoose = require("mongoose");
-const db =
-  "mongodb+srv://naveen:Naveen4@users.pgffupa.mongodb.net/?retryWrites=true&w=majority&appName=Users";
+const db = process.env.MONGODB_URI;
 mongoose
   .connect(db, {
     useNewUrlParser: true,
@@ -44,6 +47,8 @@ app.use("/auth", authRouter);
 app.use("/user", userRouter);
 app.use("/friend", friendRouter);
 app.use("/post", postRouter);
+app.use("/chat", chatRouter);
+app.use("/upload", uploadRouter);
 
 const fetchNotification = require("./Controllers/fetchNotification");
 const { authVerify } = require("./Controllers/authController");

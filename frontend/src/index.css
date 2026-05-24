@@ -4,6 +4,20 @@
 
 body {
   font-family: "Public Sans", sans-serif;
+  @apply bg-seconday-shade text-text-color antialiased;
+}
+
+@layer components {
+  .card {
+    @apply bg-main-shade rounded-2xl border border-white/5 shadow-card;
+  }
+
+  .input-field {
+    @apply rounded-xl border border-white/10 bg-seconday-shade/80 text-text-color
+      placeholder:text-gray-500 px-4 py-3 text-sm
+      focus:outline-none focus:ring-2 focus:ring-primary-shade/40 focus:border-primary-shade/30
+      transition;
+  }
 }
 
 .loading {

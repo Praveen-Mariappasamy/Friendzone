@@ -1,11 +1,12 @@
-// Import necessary components and modules
 import { Link } from "react-router-dom";
 import { navigation } from "../../constants/Constants";
 import { classNames } from "../../utils/Helpers";
 import ProfileDropDown from "./ProfileDropDown";
- 
-// Define the MobileBottomBar component
+import { useContext } from "react";
+import { MyContext } from "../../context/MyContext";
+
 const MobileBottomBar = () => {
+  const { setChatContext } = useContext(MyContext);
   return (
     // Container for the mobile bottom bar, visible only on small screens (md:hidden)
     <div className="block md:hidden bg-main-shade">
@@ -18,6 +19,11 @@ const MobileBottomBar = () => {
               <Link
                 key={item.name}
                 to={item.href}
+                onClick={() => {
+                  if (item.href === "/chatbot") {
+                    setChatContext({ mode: "social" });
+                  }
+                }}
                 // Use the classNames helper function to apply conditional classes
                 className={classNames(
                   "text-gray-600  border-b-2 border-main-shade hover:border-b-2 hover:border-primary-shade hover:text-primary-shade group flex justify-center items-center px-2 py-2 text-sm font-medium transition duration-500 ease-in-out"

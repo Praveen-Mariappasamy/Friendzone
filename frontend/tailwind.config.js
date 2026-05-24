@@ -4,7 +4,7 @@ export default {
   theme: {
     extend: {
       colors: {
-        "primary-shade": "#00BFFF ",
+        "primary-shade": "#00BFFF",
         "seconday-shade": "rgb(31 41 55)",
         "main-shade": "#1E152A",
         "text-color": "#E7E7E7",
@@ -13,6 +13,9 @@ export default {
       },
       backgroundImage: {
         "auth-bg-image": "url('./src/assets/Login-Sign-BackgroundImage.png')",
+      },
+      boxShadow: {
+        card: "0 4px 24px rgba(0, 0, 0, 0.25)",
       },
     },
   },

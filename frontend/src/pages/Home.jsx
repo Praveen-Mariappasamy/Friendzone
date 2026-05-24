@@ -2,64 +2,49 @@ import axios from "axios";
 import { Feed, PostContainer, Stories } from "../components";
 import { useContext, useEffect, useState } from "react";
 import { MyContext } from "../context/MyContext";
+import { API_BASE } from "../constants/api";
 
-// Define the Home component using a functional component
 export default function Home() {
   const [posts, setPosts] = useState([]);
-  const { socket } = useContext(MyContext);
+  const { socket, fetchPostAgain } = useContext(MyContext);
 
-  // Function to fetch posts from the server
   const fetchPosts = async () => {
     try {
-      const { data } = await axios.get(
-        `http://localhost:8000/post/fetch-post`,
-        { withCredentials: true }
-      );
+      const { data } = await axios.get(`${API_BASE}/post/fetch-post`, {
+        withCredentials: true,
+      });
       setPosts(data.posts);
     } catch (error) {
       console.log(error);
     }
   };
 
-  // Fetch posts on initial mount and whenever fetchPostAgain changes
   useEffect(() => {
-    socket.on("new post", () => {
-      fetchPosts();
-    });
-
-    socket.on("new comment", () => {
-      fetchPosts();
-    });
+    socket.on("new post", fetchPosts);
+    socket.on("new comment", fetchPosts);
+    return () => {
+      socket.off("new post", fetchPosts);
+      socket.off("new comment", fetchPosts);
+    };
   }, [socket]);
 
   useEffect(() => {
     fetchPosts();
-  }, []);
+  }, [fetchPostAgain]);
 
   return (
-    <>
-      {/* Main content area */}
-      <main className="relative z-0 flex-1 overflow-y-auto focus:outline-none custom-scrollbar">
-        {/* Start main area*/}
-        {/* An absolute positioned div that takes up the entire space */}
-        {/* It creates a placeholder for the main content */}
-        <div className="absolute inset-0 py-6 px-4 sm:px-6 lg:px-8">
-          {/* Stories */}
-          <Stories />
-
-          {/* Main content area */}
-          <div className="flex flex-col items-center justify-start h-full rounded-lg md:px-5 py-5">
-            {/* PostContainer */}
-            <PostContainer />
-
-            {/* Render Feed for each post */}
-            {posts.map((feed) => (
-              <Feed key={feed._id} feed={feed} />
-            ))}
+    <main className="relative z-0 flex-1 overflow-y-auto focus:outline-none custom-scrollbar">
+      <div className="max-w-2xl mx-auto px-4 py-6">
+        <Stories />
+        <PostContainer />
+        {posts.length === 0 ? (
+          <div className="card p-8 text-center text-gray-400">
+            No posts yet. Share something with your friends!
           </div>
-        </div>
-        {/* End main area */}
-      </main>
-    </>
+        ) : (
+          posts.map((feed) => <Feed key={feed._id} feed={feed} />)
+        )}
+      </div>
+    </main>
   );
 }

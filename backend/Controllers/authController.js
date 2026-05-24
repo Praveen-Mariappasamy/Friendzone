@@ -2,6 +2,13 @@ const jwt = require("jsonwebtoken");
 const secretKey = "this is the secret key for now";
 const User = require("../Models/userSchema");
 
+const isProduction = process.env.NODE_ENV === "production";
+const cookieOptions = {
+  httpOnly: true,
+  secure: isProduction,
+  sameSite: isProduction ? "none" : "lax",
+};
+
 const signup = async (req, res) => {
   const { username, email, password, pic } = req.body;
   if (!username || !email || !password) {
@@ -62,7 +69,7 @@ const login = async (req, res) => {
     }
 
     const token = jwt.sign({ userId: user._id }, secretKey);
-    res.cookie("token", token, { httpOnly: true, secure:true, sameSite: 'None' });
+    res.cookie("token", token, cookieOptions);
 
     return res
       .status(200)
@@ -106,7 +113,7 @@ const authVerify = async (req, res, next) => {
 };
 
 const logout = async (req, res) => {
-  res.clearCookie("token", { httpOnly: true });
+  res.clearCookie("token", cookieOptions);
   res.status(200).json({ message: "Logout Successful" });
 };
 

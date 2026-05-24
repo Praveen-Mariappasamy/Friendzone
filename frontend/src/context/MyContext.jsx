@@ -8,9 +8,10 @@ const MyContextProvier = ({ children, socket }) => {
     return userInfo ? JSON.parse(userInfo) : undefined;
   });
 
-  const [friendReq_response, setFriendReq_response] = useState(false); //for re-fetching friend request
-  const [fetchPostAgain, setFetchPostAgain] = useState(false); //for re-fetching friend request
+  const [friendReq_response, setFriendReq_response] = useState(false);
+  const [fetchPostAgain, setFetchPostAgain] = useState(false);
   const [noti, setNoti] = useState([]);
+  const [chatContext, setChatContext] = useState({ mode: "social" });
 
   return (
     <MyContext.Provider
@@ -24,6 +25,8 @@ const MyContextProvier = ({ children, socket }) => {
         setFetchPostAgain,
         noti,
         setNoti,
+        chatContext,
+        setChatContext,
       }}
     >
       {children}

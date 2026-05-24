@@ -1,4 +1,3 @@
-// Import necessary dependencies and components
 import { useState } from "react";
 import {
   FormInput,
@@ -15,6 +14,7 @@ import {
 import { useToast } from "@chakra-ui/react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import uploadImage from "../utils/uploadImage";
 
 // Define the Signup component
 const Signup = () => {
@@ -40,38 +40,28 @@ const Signup = () => {
     setConfirmPassword("");
   };
 
-  // Function for profile picture (image) upload to Cloudinary
   const pfpUpload = async (pic) => {
+    if (!pic) return;
+
     setLoading(true);
-
-    console.log("pic uploading...");
-    if (pic === undefined) {
-      alert("pic is undefined");
-      return;
-    }
-
-    // Check if the selected file is an image (png, jpeg, jpg)
-    if (
-      pic.type === "image/png" ||
-      pic.type === "image/jpeg" ||
-      pic.type === "image/jpeg"
-    ) {
-      const data = new FormData();
-      data.append("file", pic);
-      data.append("upload_preset", "socialMeidaProject");
-      data.append("cloud_name", "dvjzuiyp1");
-
-      // Send a POST request to Cloudinary API to upload the image
-      fetch("https://api.cloudinary.com/v1_1/dvjzuiyp1/image/upload", {
-        method: "post",
-        body: data,
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          // Update the profile picture URL in the state
-          setImage(data.url.toString());
-          setLoading(false);
-        });
+    try {
+      const url = await uploadImage(pic);
+      setImage(url);
+      toast({
+        title: "Profile picture uploaded",
+        status: "success",
+        duration: 1800,
+        position: "top",
+      });
+    } catch (error) {
+      toast({
+        title: error.response?.data?.error || error.message || "Upload failed",
+        status: "error",
+        duration: 2500,
+        position: "top",
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
